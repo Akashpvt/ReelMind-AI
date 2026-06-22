@@ -1,0 +1,8 @@
+**/.env
+**/.env.local
+**/.env.*.local
+.evn.local
+
+**/node_modules/
+**/.expo/
+**/dist/

@@ -1,0 +1,1 @@
+export const colors={ink:"#080A12",panel:"#111827",panelSoft:"#172033",frost:"#F8FAFC",mist:"#94A3B8",blue:"#38BDF8",cyan:"#67E8F9",violet:"#A855F7",green:"#34D399",amber:"#FBBF24",rose:"#FB7185",line:"rgba(148,163,184,0.16)"};

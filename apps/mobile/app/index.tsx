@@ -1,0 +1,2 @@
+import{Redirect}from"expo-router";import{ActivityIndicator,View}from"react-native";import{colors}from"@/lib/theme";import{useSession}from"@/providers/session-provider";
+export default function Index(){const{session,loading}=useSession();if(loading)return <View style={{flex:1,backgroundColor:colors.ink,justifyContent:"center"}}><ActivityIndicator color={colors.blue}/></View>;return <Redirect href={session?"/(tabs)":"/(auth)"}/>}

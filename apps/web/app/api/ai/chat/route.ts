@@ -1,0 +1,9 @@
+import { NextResponse } from "next/server";
+
+import { resolvePromptTemplate } from "@/lib/ai-router/prompt-templates";
+import { routeAiText } from "@/lib/ai-router/router";
+import type { AiProviderSelection } from "@/lib/ai-router/types";
+import { permissionError, resolvePermission } from "@/lib/team/permission-guards";
+
+const provider = (value: unknown): AiProviderSelection => value === "openai" || value === "gemini" || value === "claude" ? value : "auto";
+export async function POST(request: Request) { const body=await request.json().catch(()=>({})) as Record<string,unknown>;const organizationId=typeof body.organizationId==="string"?body.organizationId:null;const access=await resolvePermission("workspace:read",organizationId);if(!access.ok)return permissionError(access);const messages=Array.isArray(body.messages)?body.messages.slice(-20).flatMap(item=>item&&typeof item==="object"?[item as Record<string,unknown>]:[]):[];const transcript=messages.map(item=>`${item.role==="assistant"?"Assistant":"User"}: ${String(item.content??"").slice(0,10000)}`).join("\n\n");const direct=typeof body.message==="string"?body.message.trim().slice(0,20000):"";const message=transcript||direct;if(!message)return NextResponse.json({error:"A chat message is required."},{status:400});try{const template=await resolvePromptTemplate("general_chat",{message},access.organizationId);const result=await routeAiText({organizationId:access.organizationId,userId:access.user.id,endpoint:"/api/ai/chat",requestType:"chat",prompt:template?.prompt??message,system:typeof body.system==="string"?body.system.slice(0,10000):template?.system,provider:provider(body.provider),model:typeof body.model==="string"?body.model:undefined,promptTemplateKey:template?.key??null,metadata:{messageCount:messages.length||1}});return NextResponse.json(result);}catch(error){return NextResponse.json({error:error instanceof Error?error.message:"AI chat failed."},{status:503});}}
