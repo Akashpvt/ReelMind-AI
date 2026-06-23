@@ -10,6 +10,11 @@ function withSecurityHeaders(response: NextResponse) {
   const scriptSrc = process.env.NODE_ENV === "development"
     ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com"
     : "script-src 'self' 'unsafe-inline' https://checkout.razorpay.com";
+    const upgrade =
+      process.env.NODE_ENV === "production"
+        ? "; upgrade-insecure-requests"
+        : "";
+  
 
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("X-Frame-Options", "DENY");
@@ -22,7 +27,12 @@ function withSecurityHeaders(response: NextResponse) {
   response.headers.set("Cross-Origin-Resource-Policy", "same-origin");
   response.headers.set(
     "Content-Security-Policy",
-    `default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; ${scriptSrc}; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https: wss:; frame-src https://api.razorpay.com https://checkout.razorpay.com; media-src 'self' blob: https:; worker-src 'self' blob:; upgrade-insecure-requests`,
+    `default-src 'self'; base-uri 'self'; object-src 'none'; 
+    frame-ancestors 'none'; form-action 'self'; ${scriptSrc}; 
+    style-src 'self' 'unsafe-inline'; img-src 'self' data: 
+    blob: https:; font-src 'self' data:; connect-src 'self' https: wss:; 
+    frame-src https://api.razorpay.com https://checkout.razorpay.com; 
+   media-src 'self' blob: https:; worker-src 'self' blob:${upgrade}`
   );
 
   if (process.env.NODE_ENV === "production") {
