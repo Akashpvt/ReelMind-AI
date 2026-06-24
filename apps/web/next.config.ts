@@ -3,7 +3,7 @@ import path from "node:path";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  outputFileTracingRoot: path.join(__dirname, "../.."),
+  outputFileTracingRoot: path.join(process.cwd(), "../.."),
   poweredByHeader: false,
   async headers() {
     return [{
